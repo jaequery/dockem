@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 
 services:
   dockem-dnsmasq:
@@ -11,34 +11,32 @@ services:
     command: --log-facility=-
     volumes:
       - ./data/etc/dnsmasq.conf:/etc/dnsmasq.conf
-      - ./data/etc/dnsmasq.d:/etc/dnsmasq.d
     network_mode: "bridge"
+    restart: always
 
   dockem-proxy:
     image: jwilder/nginx-proxy:alpine
     container_name: nginx-proxy
-    labels:
-      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    # labels:
+    #   - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     ports:
       - "80:80"
-      - "443:443"
+      # - "443:443"
     volumes:
-      - ./data/etc/nginx/certs:/etc/nginx/certs:ro
-      - ./data/etc/nginx/vhost.d:/etc/nginx/vhost.d
-      - ./data/usr/share/nginx/html:/usr/share/nginx/html
+      # - ./data/etc/nginx/certs:/etc/nginx/certs
+      # - ./data/etc/nginx/vhost.d:/etc/nginx/vhost.d
+      # - ./data/usr/share/nginx/html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    restart: always
     network_mode: "bridge"
+    restart: always
 
-  dockem-proxy-ssl:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    container_name: letsencrypt-proxy
-    depends_on:
-      - dockem-proxy
-    volumes:
-      - ./data/etc/nginx/vhost.d:/etc/nginx/vhost.d
-      - ./data/etc/nginx/html:/usr/share/nginx/html
-      - ./data/etc/nginx/certs:/etc/nginx/certs:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    restart: always
-    network_mode: "bridge"
+  # dockem-ssl:
+  #   image: jrcs/letsencrypt-nginx-proxy-companion
+  #   container_name: dockem-ssl
+  #   volumes_from:
+  #     - dockem-proxy
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   restart: always
+  #   network_mode: "bridge"
+
