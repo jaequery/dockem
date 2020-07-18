@@ -1,10 +1,6 @@
 version: "3"
 
 services:
-
-  dockem-dns-masq:
-    version: '2'
-services:
   dockem-dnsmasq:
     image: andyshinn/dnsmasq
     ports:
