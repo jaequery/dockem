@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+
+  dockem-dns-masq:
+    version: '2'
+services:
+  dockem-dnsmasq:
+    image: andyshinn/dnsmasq
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    command: --log-facility=-
+    volumes:
+      - ./data/dnsmasq.conf:/etc/dnsmasq.conf
+      - ./data/dnsmasq.d:/etc/dnsmasq.d
+    network_mode: "bridge"
+
+  dockem-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+    network_mode: "bridge"
+
+  dockem-proxy-ssl:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt-proxy
+    depends_on:
+      - dockem-proxy
+    volumes:
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - ./certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+    network_mode: "bridge"
