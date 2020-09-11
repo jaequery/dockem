@@ -8,4 +8,5 @@ Dockem allows you to run an optimized and streamlined web development environmen
 
 ### Install
 
-- dockem setup
+- add a bind file
+- docker-compose up -d
